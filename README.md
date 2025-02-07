@@ -1,15 +1,8 @@
-# CapsResNet
-Here's a well-structured `README.md` file template for your CapsResNet project, which includes an abstract of your paper, explanations of specific parts of the model, instructions on training the model, and a citation for the `CustomRandomErasing` augmentation technique.
-
-### **`README.md` Template:**
-
-```markdown
 # CapsResNet - Hybrid Model for Image Classification
 
 CapsResNet is a hybrid deep learning model for image classification that leverages Capsule Networks and Residual Blocks to achieve robust performance across various image datasets. This repository provides the implementation of the model along with the necessary components for training and evaluation. You can train the model on popular datasets such as MNIST, FashionMNIST, EMNIST, CIFAR-10, CIFAR-100, and SVHN.
 
 ## Abstract
-
 Capsule Networks (CapsNet) have gained attention due to their ability to capture spatial hierarchies in data and improve generalization. In this work, we present **CapsResNet**, a hybrid model that combines the advantages of Capsule Networks and Residual Networks to handle the complexity of image classification tasks. By integrating residual blocks with capsules, we aim to create a robust model that can effectively learn from diverse datasets, improving performance on both simple and complex image recognition tasks. Our model demonstrates competitive results compared to traditional CNNs and is flexible enough to be applied to various datasets. 
 
 In this repository, we provide a modular and extensible implementation of **CapsResNet**, which allows you to experiment with different image datasets and customize the model's architecture.
@@ -31,17 +24,14 @@ The augmentation method used in this implementation is **Random Erasing**, which
 
 In this repository, the **`CustomRandomErasing`** class found in `utils.py` is an adaptation of the Random Erasing method, originally proposed by the authors of:
 
-- **DOI**: [10.1109/ICCV.2017.436](https://doi.org/10.1109/ICCV.2017.436)
+> "Random Erasing Data Augmentation" by Zhong et al., 2017. [DOI: 10.48550/arXiv.1708.04896](https://doi.org/10.48550/arXiv.1708.04896)
 
 The `CustomRandomErasing` class randomly selects a rectangular region in the image and erases it by filling it with random pixels or a constant value. This helps the model to learn more robust features that are not overly reliant on specific parts of the input image.
 
 ## Training the Model
 
 To train the model, you need to run the following command:
-
-```bash
 python train_model.py --dataset <dataset_name> --epochs <num_epochs> --batch_size <batch_size>
-```
 
 ### Dataset Options:
 - `mnist`
@@ -76,27 +66,14 @@ This command will:
 ## Installation and Setup
 
 1. Clone this repository:
-   ```bash
    git clone https://github.com/yourusername/CapsResNet.git
    cd CapsResNet
-   ```
 
 2. Install the required dependencies:
-   ```bash
    pip install -r requirements.txt
-   ```
 
 3. Download the necessary datasets (this will be handled automatically when you run the training script for the first time).
 
 4. Run the training script with the desired dataset and hyperparameters.
 
-## Citation
 
-If you use this model or the `CustomRandomErasing` method in your work, please cite the following paper:
-
-> "Random Erasing Data Augmentation" by Zhong et al., 2017. [DOI: 10.48550/arXiv.1708.04896](https://doi.org/10.48550/arXiv.1708.04896)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
