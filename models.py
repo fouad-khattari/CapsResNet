@@ -62,13 +62,13 @@ class CapsResNet(nn.Module):
         super(CapsResNet, self).__init__()
         self.conv1 = nn.Sequential(
             ResidualBlock(1, 32, stride=1),
-            ResidualBlock(32, 64, stride=1),
+            ResidualBlock(32, 48, stride=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Dropout(0.2)
+            nn.Dropout(0.1)
         )
         self.conv2 = nn.Sequential(
-            ResidualBlock(64, 256, stride=1),
-            ResidualBlock(256, 192, stride=1),
+            ResidualBlock(48, 64, stride=1),
+            ResidualBlock(64, 192, stride=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Dropout(0.2)
         )
@@ -76,7 +76,7 @@ class CapsResNet(nn.Module):
             ResidualBlock(192, 256, stride=1),
             ResidualBlock(256, 128, stride=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Dropout(0.2)
+            nn.Dropout(0.3)
         )
         self.fc_size = self._get_fc_size()  # Ensure this size is correct
         self.capsule_layer = CapsuleLayer(num_capsules=num_classes, num_features=self.fc_size, out_features=10, routing_iters=3)
