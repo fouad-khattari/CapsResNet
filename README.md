@@ -29,29 +29,33 @@ In this repository, the **`CustomRandomErasing`** class found in `utils.py` is a
 The `CustomRandomErasing` class randomly selects a rectangular region in the image and erases it by filling it with random pixels or a constant value. This helps the model to learn more robust features that are not overly reliant on specific parts of the input image.
 
 ## Training the Model
+To clarify the instructions for training your model so that they are clear and user-friendly, here’s how you can phrase it:
 
-To train the model, you need to run the following command:
-python train_model.py --dataset <dataset_name> --epochs <num_epochs> --batch_size <batch_size>
+---
 
-### Dataset Options:
-- `mnist`
-- `fmnist`
-- `emnist`
-- `cifar10`
-- `cifar100`
-- `svhn`
+**Training the Model**
 
-### Example:
-python train_model.py --dataset fmnist --epochs 10 --batch_size 64
+To train the model, you will first need to specify the dataset you wish to use. This is done by setting the `DATASET_NAME` variable in the `train.py` script. Here are the steps:
 
-This command will:
-- Load the **FashionMNIST** dataset.
-- Train the model for **10 epochs**.
-- Use a batch size of **64**.
+1. Open the `train.py` file in a text editor.
+2. Find the section of the code labeled "Select dataset".
+3. Modify the `DATASET_NAME` variable to match the dataset you want to use. The available options are:
+   - "FashionMNIST"
+   - "EMNIST"
+   - "CIFAR10"
+   - "CIFAR100"
+   - "SVHN"
+
+For example, if you want to use CIFAR10, you would set it like this:
+DATASET_NAME = "CIFAR10"
+
+4. Run the training script by opening your command line interface and typing:
+python train.py
+
 
 ### Hyperparameters:
-- **`epochs`**: Number of training epochs (default is 10).
-- **`batch_size`**: Size of each batch during training (default is 64).
+- **`epochs`**: Number of training epochs (default is 120).
+- **`batch_size`**: Size of each batch during training (default is 128).
 
 ### Model Architecture:
 - The **CapsResNet** model is composed of **Residual Blocks** followed by **Capsule Layers**.
@@ -74,6 +78,6 @@ This command will:
 
 3. Download the necessary datasets (this will be handled automatically when you run the training script for the first time).
 
-4. Run the training script with the desired dataset and hyperparameters.
+4. Run the train.py script with the desired dataset and hyperparameters.
 
 
