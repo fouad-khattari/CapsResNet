@@ -1,4 +1,4 @@
-# CapsResNet - Hybrid Model for Image Classification
+# Enhancing Image Recognition with CapsResNet: A Hybrid Model Integrating CNNs, Residual Blocks, and Capsule Layers
 
 CapsResNet is a hybrid deep learning model for image classification that leverages Capsule Networks and Residual Blocks to achieve robust performance across various image datasets. This repository provides the implementation of the model along with the necessary components for training and evaluation. You can train the model on popular datasets such as MNIST, FashionMNIST, EMNIST, CIFAR-10, CIFAR-100, and SVHN.
 
