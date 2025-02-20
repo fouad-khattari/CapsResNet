@@ -1,77 +1,89 @@
-import argparse
 import torch
+import torch.nn as nn
 import torch.optim as optim
-from models import CapsResNet
-from data_loader import load_data
-from utils import CustomRandomErasing
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from models.caps_resnet import CapsResNet
+from utils.dataset_loader import get_dataloader
 
-def train_model(model, train_loader, criterion, optimizer, device, epochs):
-    model.train()  # Set the model to training mode
-    for epoch in range(epochs):
-        running_loss = 0.0
-        correct, total = 0, 0
-        for inputs, labels in train_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            
-            # Zero the gradients
-            optimizer.zero_grad()
-            
-            # Forward pass
-            outputs = model(inputs)
-            
-            # Calculate loss and backward pass
-            loss = criterion(outputs, labels)
-            loss.backward()
-            
-            # Update the weights
-            optimizer.step()
-            
-            # Update loss and accuracy
-            running_loss += loss.item()
-            _, predicted = outputs.max(1)
-            correct += (predicted == labels).sum().item()
-            total += labels.size(0)
+# Select dataset
+DATASET_NAME = "FashionMNIST"  # Options: "FashionMNIST", "EMNIST", "CIFAR10", "CIFAR100", "SVHN"
 
-        print(f"Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}, Accuracy: {100 * correct / total}%")
+# Set device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
-def evaluate_model(model, test_loader, device):
-    model.eval()  # Set the model to evaluation mode
-    correct, total = 0, 0
+# Load dataset
+train_loader, val_loader, test_loader = get_dataloader(DATASET_NAME, batch_size=128)
+
+# Define model (change input channels and image size based on dataset)
+if DATASET_NAME in ["CIFAR10", "CIFAR100", "SVHN"]:
+    input_channels, dim = 3, 32
+else:
+    input_channels, dim = 1, 28
+
+# Define number of classes
+num_classes = 10 if DATASET_NAME != "CIFAR100" else 100
+
+
+model = CapsResNet(input_channels=input_channels, num_classes=num_classes, dim=dim).to(device)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0)
+scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.1)
+
+# Training loop
+num_epochs = 120
+train_losses, train_accuracies = [], []
+val_losses, val_accuracies = [], []
+
+for epoch in range(num_epochs):
+    model.train()
+    running_loss, correct, total = 0.0, 0, 0
+
+    for data, target in train_loader:
+        data, target = data.to(device), target.to(device)
+
+        optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+        _, predicted = torch.max(torch.softmax(output, dim=1), 1)
+        total += target.size(0)
+        correct += (predicted == target).sum().item()
+
+    train_loss = running_loss / len(train_loader)
+    train_acc = 100 * correct / total
+    train_losses.append(train_loss)
+    train_accuracies.append(train_acc)
+
+    # Validation
+    model.eval()
+    val_loss, val_correct, val_total = 0.0, 0, 0
+
     with torch.no_grad():
-        for inputs, labels in test_loader:
-            inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
-            _, predicted = outputs.max(1)
-            correct += (predicted == labels).sum().item()
-            total += labels.size(0)
+        for data, target in val_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            loss = criterion(output, target)
 
-    print(f"Test Accuracy: {100 * correct / total}%")
+            val_loss += loss.item()
+            _, predicted = torch.max(torch.softmax(output, dim=1), 1)
+            val_total += target.size(0)
+            val_correct += (predicted == target).sum().item()
 
-def main():
-    parser = argparse.ArgumentParser(description='Train the CapsResNet model')
-    parser.add_argument('--dataset', type=str, default='fmnist', choices=['mnist', 'fmnist', 'emnist', 'cifar10', 'cifar100', 'svhn'], help='Dataset to train on')
-    parser.add_argument('--epochs', type=int, default=10, help='Number of epochs')
-    parser.add_argument('--batch_size', type=int, default=64, help='Batch size')
-    args = parser.parse_args()
+    val_loss = val_loss / len(val_loader)
+    val_acc = 100 * val_correct / val_total
+    val_losses.append(val_loss)
+    val_accuracies.append(val_acc)
 
-    # Load the data (train, validation, and test loaders)
-    train_loader, val_loader, test_loader = load_data(args.dataset, args.batch_size)
+    # Adjust learning rate
+    scheduler.step(val_loss)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%, "
+          f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
-
-    # Instantiate the model
-    model = CapsResNet(num_classes=10).to(device)  # Adjust number of classes based on dataset
-
-    # Set up the optimizer and loss function
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-    # Train the model
-    train_model(model, train_loader, criterion, optimizer, device, args.epochs)
-
-    # Evaluate the model
-    evaluate_model(model, test_loader, device)
-
-if __name__ == '__main__':
-    main()
+# Save trained model
+torch.save(model.state_dict(), f"capsresnet_{DATASET_NAME}.pth")
+print(f"Model saved as capsresnet_{DATASET_NAME}.pth")

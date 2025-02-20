@@ -1,0 +1,41 @@
+**Getting Started with the Model Code**
+Welcome to our project repository! This guide will help you set up and run the models we've developed.
+
+**Prerequisites:**
+Before you start, make sure to install all the necessary libraries and dependencies. Run the following command to install them:
+```
+pip install -r requirements.txt
+```
+
+**Training the Model:**
+To train the model, you'll need to specify the dataset you want to use directly in the `train.py` script.
+
+1. Navigate to the `train.py` file.
+2. Open the file and locate the "Select dataset" section.
+3. Set the `DATASET_NAME` variable to your desired dataset. Available options include:
+   - "FashionMNIST"
+   - "EMNIST"
+   - "CIFAR10"
+   - "CIFAR100"
+   - "SVHN"
+
+Example:
+DATASET_NAME = "FashionMNIST"
+
+4. Save the changes and close the file.
+
+To start training, run:
+python train.py
+
+
+**Using the Jupyter Notebook:**
+If you prefer using a notebook, refer to the Jupyter notebook attached with this submission. 
+It provides detailed steps for training the model on the FashionMNIST dataset and can be adapted for other datasets by changing the dataset variable as described above.
+
+
+**Code Availability:**
+All code and additional documentation are available on our GitHub repository. Visit https://github.com/fouad-khattari/CapsResNet to access and download the code.
+
+
+Thank you for using our code!
+
